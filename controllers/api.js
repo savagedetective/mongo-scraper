@@ -16,7 +16,8 @@ var router = express.Router();
 
 //let the routes begin...
 router.get("/", function (req, res) {
-    res.render("index", hbsObject);
+    console.log("main page accessed");
+    res.render("index");
 });
 
 

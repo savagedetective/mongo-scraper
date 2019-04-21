@@ -22,6 +22,7 @@ app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(express.static(__dirname + '/public'));
 
 //handlebars
 app.engine("handlebars", exphbs ({ defaultLayout: "main" }));
