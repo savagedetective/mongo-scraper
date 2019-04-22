@@ -60,6 +60,7 @@ router.get("/saved", function (req, res) {
     
 });
 
+//route to scrape NYT
 router.get("/scrape", function(req, res) {
 
     console.log("scrape is running.");
