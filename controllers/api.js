@@ -22,20 +22,20 @@ router.get("/", function (req, res) {
     console.log("main page accessed");
 
     db.Article.find({ isSaved: false })
-        .then(function(dbArticle) {
+        .then(function (dbArticle) {
 
             var hbsObject = {
                 articles: dbArticle
             };
-        
+
             res.render("index", hbsObject);
             console.log("main page loaded");
         })
 
-        .catch(function(error) {
+        .catch(function (error) {
             res.json(error);
         });
-    
+
 });
 
 //saved article page
@@ -44,45 +44,44 @@ router.get("/saved", function (req, res) {
     console.log("saved page accessed");
 
     db.Article.find({ isSaved: true })
-        .then(function(dbArticle) {
+        .then(function (dbArticle) {
 
             var hbsObject = {
-                article: dbArticle
+                articles: dbArticle
             };
-        
+
             res.render("saved", hbsObject);
             console.log("saved page loaded");
         })
 
-        .catch(function(error) {
+        .catch(function (error) {
             res.json(error);
         });
-    
+
 });
 
 //route to scrape NYT
-router.get("/scrape", function(req, res) {
+router.get("/scrape", function (req, res) {
 
     console.log("scrape is running.");
 
     axios.get("https://www.nytimes.com/")
 
-        .then(function(response) {
-            
+        .then(function (response) {
+
             var $ = cheerio.load(response.data);
 
-            $("article").each(function(i, element) {
+            $("article").each(function (i, element) {
 
                 var result = {};
 
-                result.title = $(this)
+                result.title = $(element)
                     .find("h2")
                     .text();
-                result.link = "https://www.nytimes.com" + 
-                    $(this)
+                result.link = "https://www.nytimes.com" + $(element)
                     .find("a")
                     .attr("href");
-                result.summary =  $(this)
+                result.summary = $(element)
                     .find("p")
                     .text();
 
@@ -90,17 +89,65 @@ router.get("/scrape", function(req, res) {
 
                     db.Article.create(result);
                     console.log("Article successfully created.");
-                    
+
                 } else {
                     console.log("Article was not created.");
-                }
+                };
 
             });
 
         })
 
-        .catch(function(err) {
+        .catch(function (err) {
             console.log(err);
+        });
+});
+
+//api articles
+router.get("/articles", function (req, res) {
+
+    console.log("api articles page accessed");
+
+    db.Article.find({})
+        .then(function (dbArticle) {
+
+            res.json(dbArticle);
+
+        })
+
+        .catch(function (error) {
+            res.json(error);
+        });
+
+});
+
+//route to save articles
+router.put("/save/:id", function (req, res) {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { isSaved: true })
+        .then(function (data) {
+
+            res.json(data);
+
+        })
+        .catch(function (err) {
+
+            res.json(err);
+
+        });
+});
+
+//route to remove saved articles
+router.put("/remove/:id", function (req, res) {
+    db.Article.findOneAndUpdate({ _id: req.params.id }, { isSaved: false })
+        .then(function (data) {
+
+            res.json(data)
+
+        })
+        .catch(function (err) {
+
+            res.json(err);
+
         });
 });
 
