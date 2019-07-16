@@ -47,7 +47,8 @@ $(document).ready(function () {
             type: "GET"
         })
             .done(function (response) {
-                res.redirect('/');
+                //res.redirect("/");
+                window.location.reload();
             });
         
             console.log("scrape complete.");
